@@ -1,4 +1,5 @@
 import sys
+import math
 from heapq import heappush, heappop
 from collections import defaultdict
 from pprint import pprint
@@ -27,6 +28,10 @@ def huffman_encoding(data):
     char2freq = defaultdict(int)
     for char in data:
         char2freq[char] += 1 # without defaultdict: ... = char2freq.get(char, 0) + 1
+
+    # Fix for input of one repeated character
+    if len(char2freq.keys()) == 1:
+        char2freq['dummy'] = 0
 
     # Build Huffman tree
     pq = [] # priority queue
@@ -63,26 +68,25 @@ def huffman_decoding(data, tree):
 
     return decoded_data
 
-encoded_data, tree = huffman_encoding("heeelllo world")
+def test_encode_decode(data):
+    encoded_data, tree = huffman_encoding(data)
+    data_size = len(data)
+    encoded_size = len(encoded_data)/8
+    print ("Input:        {}".format(data))
+    print ("Input size:   {} bytes".format(data_size))
+    print ("Encoded:      {}".format(encoded_data))
+    print ("Encoded size: {} bytes (Ratio: {})".format(encoded_size, encoded_size/data_size))
 
-print(encoded_data)
+    decoded_data = huffman_decoding(encoded_data, tree)
+    print ("Input data = decoded data? {}\n".format(data == decoded_data))
 
-decoded_data = huffman_decoding(encoded_data, tree)
 
-print(decoded_data)
-
-# if __name__ == "__main__":
-#     a_great_sentence = "The bird is the word"
-
-#     print ("The size of the data is: {}\n".format(sys.getsizeof(a_great_sentence)))
-#     print ("The content of the data is: {}\n".format(a_great_sentence))
-
-#     encoded_data, tree = huffman_encoding(a_great_sentence)
-
-#     print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
-#     print ("The content of the encoded data is: {}\n".format(encoded_data))
-
-#     decoded_data = huffman_decoding(encoded_data, tree)
-
-#     print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
-#     print ("The content of the encoded data is: {}\n".format(decoded_data))
+if __name__ == "__main__":
+    test_encode_decode("FFFFFFFFFFFFFFFF") # 1, 16
+    test_encode_decode("abcdefghijklmnop") # 16, 16
+    test_encode_decode("abcdefghijklmnopabcdefghijklmnop")
+    test_encode_decode("FFFFFFFFFFFFFFFFabcdefghijklmnop")
+    test_encode_decode("aaaaaaaaaaaaaaaabbbbbbbbbbbbbbbb") # 2, 32
+    test_encode_decode("aaaaaaaaaaabbbbbbbbbbbcccccccccc") # 3, 32
+    test_encode_decode("aaaaaaaabbbbbbbbccccccccdddddddd") # 4, 32
+    test_encode_decode("aaaaaaaabbbbbbbccccccddddddeeeee") # 5, 32
