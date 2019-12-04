@@ -33,10 +33,6 @@ class Node:
         else:
             return output
 
-        return output + str(self.next) if self.next else output
-
-        return self.next ? output + str(self.next) : output
-
 class Blockchain:
     def __init__(self):
         self.head = None
