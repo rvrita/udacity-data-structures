@@ -107,11 +107,14 @@ print (union(linked_list_3,linked_list_4))
 # None
 print (intersection(linked_list_3,linked_list_4))
 
-# Test case 3
+# Test case 3 - union of two empty lists
 
 linked_list_5 = LinkedList()
 
 # None
 print(union(linked_list_5, linked_list_5))
+
+# Test case 4 -  intersection of same list
+
 # 1 -> 7 -> 8 -> 9 -> 11 -> 21 -> None
 print(intersection(linked_list_4, linked_list_4))
