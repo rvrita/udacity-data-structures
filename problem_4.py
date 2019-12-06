@@ -1,120 +1,66 @@
-class Node:
-    def __init__(self, value):
-        self.value = value
-        self.next = None
+class Group(object):
+    def __init__(self, _name):
+        self.name = _name
+        self.groups = []
+        self.users = []
 
-    def __str__(self):
-        return "{} -> ".format(self.value) + str(self.next)
+    def add_group(self, group):
+        self.groups.append(group)
 
+    def add_user(self, user):
+        self.users.append(user)
 
-class LinkedList:
-    def __init__(self):
-        self.head = None
+    def get_groups(self):
+        return self.groups
 
-    def __str__(self):
-        return str(self.head)
+    def get_users(self):
+        return self.users
 
-    def append(self, value):
-
-        if self.head is None:
-            self.head = Node(value)
-            return
-
-        node = self.head
-        while node.next:
-            node = node.next
-
-        node.next = Node(value)
-
-    def size(self):
-        size = 0
-        node = self.head
-        while node:
-            size += 1
-            node = node.next
-
-        return size
+    def get_name(self):
+        return self.name
 
 
-def union(llist_1, llist_2):
-    # set uses a hash map, which will give better than O(n) insertion time
-    values = set()
-    for node in [llist_1.head, llist_2.head]:
-        while node:
-            values.add(node.value)
-            node = node.next
-    union = LinkedList()
-    for value in values:
-        union.append(value)
-    return union
+def is_user_in_group(user, group):
+    """
+    Return True if user is in the group, False otherwise.
+    Args:
+      user(str): user name/id
+      group(class:Group): group to check user membership against
+    """
+    if type(group) != Group:
+        return False
 
+    if user in group.users:
+        return True
 
-def intersection(llist_1, llist_2):
-    set1 = set()
-    node = llist_1.head
-    while node:
-        set1.add(node.value)
-        node = node.next
+    for subgroup in group.groups:
+        if is_user_in_group(user, subgroup) == True:
+            return True
 
-    set2 = set()
-    node = llist_2.head
-    while node:
-        if node.value in set1:
-            set2.add(node.value)
-        node = node.next
+    return False
 
-    intersection = LinkedList()
-    for value in set2:
-        intersection.append(value)
-    return intersection
+# Test Cases
+parent = Group("parent")
+child = Group("child")
+sub_child = Group("subchild")
+sub_child_without_user = Group("subchild without user")
+sub_child_user = "sub_child_user"
+sub_child.add_user(sub_child_user)
+child.add_group(sub_child)
+child.add_group(sub_child_without_user)
+parent.add_group(child)
 
+print(is_user_in_group("sub_child_user", sub_child))
+# True
 
-# Test case 1
+print(is_user_in_group("nonexistent_user", sub_child))
+# False
 
-linked_list_1 = LinkedList()
-linked_list_2 = LinkedList()
+print(is_user_in_group("sub_child_user", parent))
+# True
+ 
+print(is_user_in_group("sub_child_user", sub_child_without_user))
+# False
 
-elements_1 = [3,2,4,35,6,65,6,4,3,21]
-elements_2 = [6,32,4,9,6,1,11,21,1]
-
-for i in elements_1:
-    linked_list_1.append(i)
-
-for i in elements_2:
-    linked_list_2.append(i)
-
-# 32 -> 65 -> 2 -> 35 -> 3 -> 4 -> 6 -> 1 -> 9 -> 11 -> 21 -> None
-print (union(linked_list_1,linked_list_2))
-# 4 -> 21 -> 6 -> None
-print (intersection(linked_list_1,linked_list_2))
-
-# Test case 2
-
-linked_list_3 = LinkedList()
-linked_list_4 = LinkedList()
-
-elements_3 = [3,2,4,35,6,65,6,4,3,23]
-elements_4 = [1,7,8,9,11,21,1]
-
-for i in elements_3:
-    linked_list_3.append(i)
-
-for i in elements_4:
-    linked_list_4.append(i)
-
-# 65 -> 2 -> 35 -> 3 -> 4 -> 6 -> 1 -> 7 -> 8 -> 9 -> 11 -> 21 -> 23 -> None
-print (union(linked_list_3,linked_list_4))
-# None
-print (intersection(linked_list_3,linked_list_4))
-
-# Test case 3 - union of two empty lists
-
-linked_list_5 = LinkedList()
-
-# None
-print(union(linked_list_5, linked_list_5))
-
-# Test case 4 -  intersection of same list
-
-# 1 -> 7 -> 8 -> 9 -> 11 -> 21 -> None
-print(intersection(linked_list_4, linked_list_4))
+print(is_user_in_group(None, None)) 
+# False
